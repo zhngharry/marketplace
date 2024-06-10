@@ -305,7 +305,7 @@ export const getBlacklist = async () => {
 * It fetches the snippets.json file from the Github repository and returns it as an array of snippets.
 * @returns Array of snippets
 */
-export const fetchCssSnippets = async () => {
+export const fetchCssSnippets = async (hideInstalled = false) => {
   const snippetsJSON = await fetch(SNIPPETS_URL).then(res => res.json()).catch(() => []) as Snippet[];
   if (!snippetsJSON.length) return [];
 
@@ -320,7 +320,11 @@ export const fetchCssSnippets = async () => {
       delete snip.preview;
     }
 
-    accum.push(snip);
+    // Hide installed snippets if option is set and it's installed
+    if (!(hideInstalled && localStorage.getItem(`marketplace:installed:snippet:${snip.title.replaceAll(" ", "-")}`))) {
+      accum.push(snip);
+    }
+
     return accum;
   }, []);
   return snippets;
